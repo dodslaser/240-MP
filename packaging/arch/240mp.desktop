@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=240-MP
+Comment=Retro VHS-style media player
+Exec=240mp
+Icon=240mp
+Terminal=false
+Categories=AudioVideo;Video;Player;

@@ -1,0 +1,34 @@
+# Maintainer: dodslaser <2969909+dodslaser@users.noreply.github.com>
+pkgname=240mp
+pkgver=main
+pkgrel=1
+pkgdesc="Retro VHS-style media player frontend for Plex, local files and ambient video (uses mpv for playback)"
+arch=('x86_64' 'aarch64')
+url="https://github.com/dodslaser/240-MP"
+license=('GPL-3.0-only')
+depends=('qt6-base' 'qt6-declarative' 'qt6-svg' 'libdrm' 'openssl' 'mpv')
+makedepends=('cmake' 'ninja')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/main.tar.gz"
+        '240mp.desktop')
+sha256sums=('SKIP'
+            'c573115c3d0c8027f77f224096fbe6fe7147d795367082acc8ebf283c54647ce')
+
+build() {
+  cmake -S "240-MP-$pkgver" -B build -G Ninja \
+    -DCMAKE_BUILD_TYPE=None \
+    -DCMAKE_INSTALL_PREFIX=/usr
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+
+  # install.sh is the Debian/RPi installer — not useful inside a pacman package.
+  # The .lua OSC scripts in the same directory ARE needed at runtime.
+  rm -f "$pkgdir/usr/share/240mp/scripts/install.sh"
+
+  install -Dm644 240mp.desktop "$pkgdir/usr/share/applications/240mp.desktop"
+  install -Dm644 "240-MP-$pkgver/assets/images/logo.svg" \
+    "$pkgdir/usr/share/icons/hicolor/scalable/apps/240mp.svg"
+  install -Dm644 "240-MP-$pkgver/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}
