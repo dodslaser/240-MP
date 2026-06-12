@@ -30,9 +30,10 @@ public:
     explicit MpvController(const QString &appRoot, QObject *parent = nullptr);
     ~MpvController() override;
 
-    int position()    const { return m_position;    }
-    int duration()    const { return m_duration;    }
-    int playlistPos() const { return m_playlistPos; }
+    int  position()    const { return m_position;    }
+    int  duration()    const { return m_duration;    }
+    int  playlistPos() const { return m_playlistPos; }
+    bool isPlaying()   const { return m_process && m_process->state() == QProcess::Running; }
 
     Q_INVOKABLE void loadAndPlay(const QString &url, float startSeconds,
                                   int audioTrack, int subTrack,

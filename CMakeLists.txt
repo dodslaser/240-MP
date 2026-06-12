@@ -28,7 +28,9 @@ add_executable(240mp
     src/modules/plex/PlexBackend.cpp
     src/modules/ambient_mode/AmbientModeBackend.cpp
     src/player/MpvController.cpp
+    src/GamepadController.cpp
     $<$<BOOL:${APPLE}>:src/macos_utils.mm>
+    $<$<BOOL:${APPLE}>:src/macos_GamepadController.mm>
 )
 
 target_link_libraries(240mp PRIVATE
@@ -43,7 +45,7 @@ target_link_libraries(240mp PRIVATE
 )
 
 if(APPLE)
-    target_link_libraries(240mp PRIVATE "-framework AppKit")
+    target_link_libraries(240mp PRIVATE "-framework AppKit" "-framework GameController")
 endif()
 
 if(NOT APPLE)

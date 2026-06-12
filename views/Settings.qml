@@ -38,6 +38,7 @@ FocusScope {
             value: appSettings["color_scheme"] || "Video 1",
             moduleId: ""
         })
+        items.push({ type: "gamepad", label: "Gamepad" })
 
         // MODULES section — only show modules with has_settings
         var hasModuleSettings = false
@@ -159,6 +160,8 @@ FocusScope {
             var row = settingsItems[currentIndex]
             if (row && row.type === "submenu") {
                 settingsRoot.navigateTo("views/ModuleSettings.qml", { moduleId: row.moduleId }, { currentIndex: settingsList.currentIndex })
+            } else if (row && row.type === "gamepad") {
+                settingsRoot.navigateTo("views/GamepadSettings.qml", {}, { currentIndex: settingsList.currentIndex })
             } else if (row && row.type === "quit") {
                 settingsRoot.quitChoiceIndex = 0
                 settingsRoot.quitOverlayVisible = true
@@ -242,7 +245,7 @@ FocusScope {
                         font.pixelSize:root.sh * 0.05 //24
                     }
                     Text {
-                        visible: modelData.type === "submenu" || modelData.type === "list_single"
+                        visible: modelData.type === "submenu" || modelData.type === "gamepad" || modelData.type === "list_single"
                         text: "\u25BA"
                         color: settingsList.currentIndex === index ? root.surfaceColor : root.tertiaryColor
                         font.family: root.globalFont

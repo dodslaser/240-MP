@@ -14,6 +14,7 @@
 #include "modules/plex/PlexBackend.h"
 #include "modules/ambient_mode/AmbientModeBackend.h"
 #include "player/MpvController.h"
+#include "GamepadController.h"
 #ifdef Q_OS_MAC
 #include "macos_utils.h"
 #endif
@@ -78,6 +79,7 @@ int main(int argc, char *argv[]) {
     PlexBackend         plexBackend(appRoot, dataRoot);
     AmbientModeBackend  ambientMode(dataRoot);
     MpvController       mpvController(appRoot);
+    GamepadController   gamepadController(dataRoot, &mpvController);
 
     // Each module backend is wired in one call: stored for action routing, exposed to QML
     // under its context-property name, and its optional signals/slots connected by
@@ -87,8 +89,9 @@ int main(int argc, char *argv[]) {
     appCore.registerModule("com.240mp.plex",         "plexBackend",        &plexBackend, ctx);
     appCore.registerModule("com.240mp.ambient_mode", "ambientModeBackend", &ambientMode, ctx);
 
-    ctx->setContextProperty("appCore",       &appCore);
-    ctx->setContextProperty("mpvController", &mpvController);
+    ctx->setContextProperty("appCore",            &appCore);
+    ctx->setContextProperty("mpvController",      &mpvController);
+    ctx->setContextProperty("gamepadController",  &gamepadController);
 #ifdef Q_OS_MAC
     engine.rootContext()->setContextProperty("macScreenX",      0);
     engine.rootContext()->setContextProperty("macScreenY",      0);
