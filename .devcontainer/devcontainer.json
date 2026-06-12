@@ -1,0 +1,9 @@
+{
+  "build": {
+    "dockerfile": "Dockerfile"
+},
+"features": {
+	"ghcr.io/devcontainers-extra/features/cmake:1": {},
+	"ghcr.io/devcontainer-community/devcontainer-features/ninja-build.org:1": {}
+}
+}
