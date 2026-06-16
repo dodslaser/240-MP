@@ -1,0 +1,20 @@
+{
+  "id": "com.240mp.tidal",
+  "name": "Tidal",
+  "icon": "assets/images/logo.svg",
+  "entry_point_qml": "views/Root.qml",
+  "settings": [
+    { "key": "enabled", "label": "Enabled", "type": "toggle", "default": "OFF" },
+    {
+      "key": "audio_quality",
+      "label": "Audio Quality",
+      "type": "list_single",
+      "options_source": "dynamic",
+      "options_slot": "get_quality_options",
+      "default": "HIGH",
+      "requires_auth": true
+    },
+    { "key": "sign_in", "label": "Sign In", "type": "action", "action_slot": "start_auth" },
+    { "key": "sign_out", "label": "Sign Out", "type": "action", "action_slot": "logout", "requires_auth": true }
+  ]
+}

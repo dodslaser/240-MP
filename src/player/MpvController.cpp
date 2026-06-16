@@ -97,7 +97,8 @@ void MpvController::loadAndPlay(const QString &url, float startSeconds,
                                  const QStringList &subFiles, bool loop,
                                  int playlistStart, float transcodeOffsetSec,
                                  const QString &plexToken, bool muteAudio,
-                                 const QString &oscMode) {
+                                 const QString &oscMode,
+                                 const QString &httpAuthHeader, bool audioOnly) {
     if (m_process) {
         m_process->disconnect();
         if (m_process->state() != QProcess::NotRunning) {
@@ -184,6 +185,31 @@ void MpvController::loadAndPlay(const QString &url, float startSeconds,
         // Plex URLs are direct file paths — yt-dlp hook is not needed and causes
         // spurious 401 errors when mpv encounters a non-2xx response from PMS.
         args << QStringLiteral("--ytdl=no");
+    }
+    if (!httpAuthHeader.isEmpty())
+        args << QString("--http-header-fields=Authorization:%1").arg(httpAuthHeader);
+
+    if (audioOnly) {
+        args << QStringLiteral("--no-video");
+        m_headlessMode = false;
+        m_process = new QProcess(this);
+        m_process->setProcessChannelMode(QProcess::MergedChannels);
+        connect(m_process,
+                QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
+                this, &MpvController::onProcessFinished);
+        connect(m_process, &QProcess::readyRead, this, [this]() {
+            const QByteArray out = m_process->readAll();
+            if (!out.isEmpty())
+                qWarning("[mpv] %s", out.trimmed().constData());
+        });
+        QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+        env.insert("APP_ROOT", m_appRoot);
+        m_process->setProcessEnvironment(env);
+        args << QString("--input-conf=%1").arg(m_inputConfPath)
+             << QStringLiteral("--video-sync=audio");
+        m_process->start(bin, args);
+        m_connectTimer->start();
+        return;
     }
 
     // plex.direct certs are Let's Encrypt-signed but ffmpeg's bundled CA bundle

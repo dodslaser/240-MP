@@ -13,6 +13,7 @@
 #include "modules/local_files/LocalFilesBackend.h"
 #include "modules/plex/PlexBackend.h"
 #include "modules/ambient_mode/AmbientModeBackend.h"
+#include "modules/tidal/TidalBackend.h"
 #include "player/MpvController.h"
 #include "GamepadController.h"
 #ifdef Q_OS_MAC
@@ -78,6 +79,7 @@ int main(int argc, char *argv[]) {
     LocalFilesBackend   localFiles(appRoot, dataRoot);
     PlexBackend         plexBackend(appRoot, dataRoot);
     AmbientModeBackend  ambientMode(dataRoot);
+    TidalBackend        tidalBackend(appRoot, dataRoot);
     MpvController       mpvController(appRoot);
     GamepadController   gamepadController(dataRoot, &mpvController);
 
@@ -88,6 +90,7 @@ int main(int argc, char *argv[]) {
     appCore.registerModule("com.240mp.local_files",  "localFilesBackend",  &localFiles,  ctx);
     appCore.registerModule("com.240mp.plex",         "plexBackend",        &plexBackend, ctx);
     appCore.registerModule("com.240mp.ambient_mode", "ambientModeBackend", &ambientMode, ctx);
+    appCore.registerModule("com.240mp.tidal",        "tidalBackend",       &tidalBackend, ctx);
 
     ctx->setContextProperty("appCore",            &appCore);
     ctx->setContextProperty("mpvController",      &mpvController);

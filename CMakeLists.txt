@@ -17,6 +17,13 @@ if(NOT APPLE)
     pkg_check_modules(Libdrm REQUIRED libdrm)
 endif()
 
+# libqrencode — optional; enables QR code display on the Tidal sign-in screen.
+# Install: apt install libqrencode-dev (RPi/Debian) or brew install qrencode (macOS).
+find_package(PkgConfig QUIET)
+if(PkgConfig_FOUND)
+    pkg_check_modules(Qrencode QUIET libqrencode)
+endif()
+
 if(APPLE)
     enable_language(OBJCXX)
 endif()
@@ -27,6 +34,7 @@ add_executable(240mp
     src/modules/local_files/LocalFilesBackend.cpp
     src/modules/plex/PlexBackend.cpp
     src/modules/ambient_mode/AmbientModeBackend.cpp
+    src/modules/tidal/TidalBackend.cpp
     src/player/MpvController.cpp
     src/GamepadController.cpp
     $<$<BOOL:${APPLE}>:src/macos_utils.mm>
@@ -42,6 +50,7 @@ target_link_libraries(240mp PRIVATE
     Qt6::Svg
     OpenSSL::Crypto
     $<$<NOT:$<BOOL:${APPLE}>>:${Libdrm_LIBRARIES}>
+    $<$<BOOL:${Qrencode_FOUND}>:${Qrencode_LIBRARIES}>
 )
 
 if(APPLE)
@@ -50,6 +59,14 @@ endif()
 
 if(NOT APPLE)
     target_include_directories(240mp PRIVATE ${Libdrm_INCLUDE_DIRS})
+endif()
+
+if(Qrencode_FOUND)
+    target_compile_definitions(240mp PRIVATE TIDAL_HAS_QRCODE)
+    target_include_directories(240mp PRIVATE ${Qrencode_INCLUDE_DIRS})
+    message(STATUS "Tidal: QR code support enabled (libqrencode found)")
+else()
+    message(STATUS "Tidal: QR code support disabled (libqrencode not found)")
 endif()
 
 target_include_directories(240mp PRIVATE
